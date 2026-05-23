@@ -73,7 +73,7 @@ CASE
         OR TRIM(`Collaborating Countries`) = 'nan'
 		THEN `Country`
     WHEN TRIM(`Collaborating Countries`) LIKE CONCAT('%', TRIM(`Country`), '%')
-		THEN `Collaborating Countries` -- Already contains country
+		THEN `Collaborating Countries` -- Already contains country, keep it the same
 	ELSE CONCAT(`Country`, ', ' , TRIM(`Collaborating Countries`)) -- If not, add country
 END;
 
