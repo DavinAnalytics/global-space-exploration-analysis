@@ -54,14 +54,14 @@ SELECT
     Country,
     `Collaborating Countries` AS Original,
 CASE
-        WHEN `Collaborating Countries` IS NULL 
-          OR TRIM(`Collaborating Countries`) = '' 
-          OR TRIM(`Collaborating Countries`) = 'nan'
+	WHEN `Collaborating Countries` IS NULL 
+		OR TRIM(`Collaborating Countries`) = '' 
+		OR TRIM(`Collaborating Countries`) = 'nan'
         THEN `Country`
-        WHEN TRIM(`Collaborating Countries`) LIKE CONCAT('%', TRIM(`Country`), '%')
+	WHEN TRIM(`Collaborating Countries`) LIKE CONCAT('%', TRIM(`Country`), '%')
         THEN `Collaborating Countries`
-        ELSE CONCAT(TRIM(`Country`), ', ', TRIM(`Collaborating Countries`))
-    END AS New_Collaborating_Countries
+	ELSE CONCAT(TRIM(`Country`), ', ', TRIM(`Collaborating Countries`))
+END AS New_Collaborating_Countries
 FROM space_exploration;
 
 -- 7. Fix Collaborating Countries (include main country)
@@ -72,7 +72,6 @@ CASE
 		OR TRIM(`Collaborating Countries`) = '' 
         OR TRIM(`Collaborating Countries`) = 'nan'
 		THEN `Country`
-    
     WHEN TRIM(`Collaborating Countries`) LIKE CONCAT('%', TRIM(`Country`), '%')
 		THEN `Collaborating Countries` -- Already contains country
 	ELSE CONCAT(`Country`, ', ' , TRIM(`Collaborating Countries`)) -- If not, add country
