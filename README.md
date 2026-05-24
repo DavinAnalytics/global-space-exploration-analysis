@@ -238,18 +238,19 @@ Focusing on proven technologies (like Reusable Rockets) and strong project manag
 ### 8. Ranking Analysis: Top 10 missions by cost-effectiveness (Success Rate per Billion $)
 
 **Insight:**  
-[Write insight after running the query]
+The highest cost-efficiency comes from **low-budget missions** that still achieve solid success rates.
 
 **Supporting Data:**
-- Top 3–5 missions with highest success-per-billion
+| Rank | Mission Name                          | Country | Technology        | Budget($B) | Success Rate | Success/Billion |
+|------|---------------------------------------|---------|-------------------|------------|--------------|-----------------|
+| 1    | Open-architected uniform flexibility  | USA     | Nuclear Propulsion| $0.58      | 84%          | **144.83**      |
+| 2    | Digitized leadingedge data-warehouse  | USA     | Reusable Rocket   | $0.67      | 94%          | 140.30          |
+| 3    | Adaptive bandwidth-monitored workforce| China	 | AI Navigation     | $0.56      | 75%	         | 133.93	   | 
+
 
 **Implication for Aerospace:**  
-[What high-efficiency missions teach us about future design]
+Lean and efficient missions are possible and should be used for technology demonstrations and smaller programs.
 
-**Queries & Methods:**
-- Aggregations, groupings, and window functions in SQL
-- Custom calculated columns (e.g., `Total_Countries_Involved`)
-- Comparative analysis between countries and mission types
 
 **Full analysis available in:** [`sql/02_exploratory_analysis.sql`](sql/02_exploratory_analysis.sql)
 
@@ -378,21 +379,21 @@ global-space-exploration-analysis/
 - [ ] Expand to include real-time data updates
 - [ ] Create interactive dashboard (Tableau/Power BI)
 - [ ] Perform statistical testing on findings
-- [ ] [Add your own ideas]
+- [ ] [Add my own ideas]
 
 **Learnings for Future Projects:**
 - [What worked well in this project?]
-- [What would you do differently next time?]
+- [What to do differently next time?]
 - [Skills to develop further?]
 
 ---
 
 ## Contact & Questions
 
-**Author:** [Davin Kim]
-**Date Completed:** [MM/YYYY]
-**GitHub:** [https://github.com/DavinAnalytics]
-**LinkedIn:** [Your LinkedIn profile link - helpful for job search!]
+**Author:**[Davin Kim
+**Date Completed:** MM/YYYY
+**GitHub:** https://github.com/DavinAnalytics
+**LinkedIn:** LinkedIn profile link
 
 If you have questions about the analysis or data methodology, feel free to reach out!
 
