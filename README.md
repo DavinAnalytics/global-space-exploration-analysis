@@ -78,7 +78,8 @@
 **Status: Completed**
 
 ### Overview
-I performed comprehensive data cleaning on the Global Space Exploration Dataset to ensure data quality and usability for analysis. This step was critical as the raw dataset contained several real-world inconsistencies typical of messy operational data.
+I performed comprehensive data cleaning on the Global Space Exploration Dataset to ensure data quality and usability for analysis. 
+This step was critical as the raw dataset contained several real-world inconsistencies typical of messy operational data.
 
 ### Key Issues Identified & Resolved
 
@@ -121,7 +122,8 @@ China and the UK lead significantly in mission volume with 322 missions each. Ho
 - UK: 322 missions, 75.04% avg success rate, **$24.93B** avg budget (most efficient among top countries)
 
 **Implication for Aerospace Industry:**  
-This highlights strong competition from international players. Companies like SpaceX, NASA, and Blue Origin should focus on cost-efficiency strategies to maintain competitive advantage in the global market.
+This highlights strong competition from international players. 
+Companies like SpaceX, NASA, and Blue Origin should focus on cost-efficiency strategies to maintain competitive advantage in the global market.
 
 ---
 
@@ -186,7 +188,8 @@ Solo missions performed the worst across nearly all metrics, including significa
 | 4                   | 691              | 74.92%               | 183                    | 25.39              | 2            | 3
 
 **Implication for Aerospace:**   
-This analysis strongly supports forming strategic partnerships. For companies like SpaceX, NASA, and Blue Origin, collaborating with reliable partners can meaningfully improve mission success probability, reduce development timelines, and lower overall costs. 
+This analysis strongly supports forming strategic partnerships.
+Collaborating with reliable partners can meaningfully improve mission success probability, reduce development timelines, and lower overall costs. 
 This is especially valuable for complex, high-stakes programs such as lunar landings, Mars missions, or defense-related space projects.
 
 ---
@@ -194,7 +197,8 @@ This is especially valuable for complex, high-stakes programs such as lunar land
 ### 6. Environmental Impact on mission success rate and budget
 
 **Insight:**  
-The environmental impact level has minimal overall effect on the mission success rate. Missions with medium environmental impact show slightly higher success rates, while high impact missions actually have the lowest success rate.
+The environmental impact level has minimal overall effect on the mission success rate. 
+Missions with medium environmental impact show slightly higher success rates, while high impact missions actually have the lowest success rate.
 
 **Supporting Data:**
 | Environmental Impact | Avg Success Rate | Avg Budget ($B)  | Total Missions | 
@@ -226,7 +230,8 @@ Even at the highest budget tier (~$50B), success rates vary dramatically (from 5
 | Multi-layered 24hour adapter          | USA       | **Unmanned** | Solar Propulsion   | 49.92       | 67%          | 1.34                |               
 
 **Implication for Aerospace:**  
-This highlights the risk of massive budget overruns without corresponding success guarantees. Focusing on proven technologies (like Reusable Rockets) and strong project management may deliver better outcomes than simply increasing spending.
+This highlights the risk of massive budget overruns without corresponding success guarantees. 
+Focusing on proven technologies (like Reusable Rockets) and strong project management may deliver better outcomes than simply increasing spending.
 
 ---
 
