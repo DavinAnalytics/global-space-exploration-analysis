@@ -38,8 +38,9 @@
 8. Ranking Analysis: Top 10 missions by cost-effectiveness (Success Rate per Billion $ spent) (Window functions — RANK)
 
 **Why does this matter?**
-
-[1-2 sentences on relevance - who cares about this answer and why]
+In an era of intensifying global space competition and rapidly rising mission costs, understanding what drives success, cost-efficiency, and reliability is critical for space agencies and private companies alike. 
+This analysis provides actionable insights on optimal international collaboration strategies, technology effectiveness (e.g., reusable rockets vs. nuclear propulsion), and budget allocation which are directly relevant to organizations like SpaceX, Blue Origin, NASA, Northrop Grumman, and Boeing as they plan future lunar missions, Mars exploration, and satellite programs.
+By identifying patterns in 3,000+ missions, this project demonstrates how data-driven decision making can reduce risk, improve cost-efficiency, and accelerate innovation in the aerospace industry.
 
 ---
 
@@ -54,6 +55,9 @@
 **Geographic Coverage:** China, France, Germany, India, Israel, Japan, Russia, UAE, UK, USA
 
 **Source:** Kaggle - https://www.kaggle.com/datasets/atharvasoundankar/global-space-exploration-dataset-2000-2025
+
+> **Data Quality Note:**  
+> The `Duration (in Days)` field contains many unrealistic low values (including numerous 1-day durations). Since this is a **synthetic dataset**, these values should be interpreted with caution; they likely do not represent actual full mission timelines.
 
 **Columns Included:**
 - Country
@@ -255,26 +259,6 @@ Lean and efficient missions are possible and should be used for technology demon
 **Full analysis available in:** [`sql/02_exploratory_analysis.sql`](sql/02_exploratory_analysis.sql)
 
 ---
-
-## Visualizations
-
-### Chart 1: [Title]
-**What it shows:** [Brief description]
-**Key takeaway:** [One sentence insight]
-![Chart 1](./visualizations/chart_1.png)
-
-### Chart 2: [Title]
-**What it shows:** [Brief description]
-**Key takeaway:** [One sentence insight]
-![Chart 2](./visualizations/chart_2.png)
-
-### Chart 3: [Title]
-**What it shows:** [Brief description]
-**Key takeaway:** [One sentence insight]
-![Chart 3](./visualizations/chart_3.png)
-
----
-
 ## Skills Demonstrated
 
 **SQL Proficiency**
@@ -312,6 +296,47 @@ Lean and efficient missions are possible and should be used for technology demon
 
 ---
 
+## Excel Analysis & Dashboard
+
+**Status:** Completed  
+**File:** [`Global_Space_Exploration_Excel_Dashboard.xlsx`](./excel/Global_Space_Exploration_Excel_Dashboard.xlsx)
+
+I recreated all major insights from the SQL analysis in Excel using PivotTables, calculated fields, charts, and clear data storytelling.
+
+### Key Visualizations:
+
+**1. Leading Countries in Space Missions**
+![Countries Leadership](./excel/excel_visualizations/countries_missions_chart.png)
+
+**2. Technology Efficiency Comparison**
+![Technology Efficiency](./excel/excel_visualizations/technology_efficiency.png)
+
+**3. International Collaboration Impact**
+![Collaboration Impact](./excel/excel_visualizations/collaboration_impact.png)
+
+**4. Manned vs Unmanned Missions**
+![Manned vs Unmanned](./excel/excel_visualizations/mission_types.png)
+
+**5. Environmental Impact**
+![Environmental Impact](./excel/excel_visualizations/environmental_impact.png)
+
+**6. Year-over-Year Trends**
+![YoY Trends](./excel/excel_visualizations/space_mission_trends.png)
+
+**7. Top 10 Most Expensive Missions**
+![Most Expensive Missions](./excel/excel_visualizations/expensive_missions.png)
+
+**8. Top 10 Cost-Effective Missions**
+![Cost Effective Missions](./excel/excel_visualizations/cost_effective_missions.png)
+
+### Excel Skills Demonstrated:
+- Advanced PivotTables and Slicers
+- Calculated Fields (e.g. Success per $Billion)
+- Professional chart design and data visualization
+- Insight generation and business storytelling
+- Working with large datasets (3,000+ rows)
+
+**Note:** Duration (in Days) was intentionally excluded from analysis due to unrealistic values in the synthetic dataset (as noted in the Data Quality section).
 ## How to Reproduce
 
 ### Prerequisites
