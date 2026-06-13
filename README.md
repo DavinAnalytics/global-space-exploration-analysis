@@ -6,7 +6,7 @@
 
 **Dataset:** Global Space Exploration Dataset (3,000+ mission records across multiple countries and decades)
 
-**Tools & Technologies:** SQL, Excel, Python, Data Visualization
+**Tools & Technologies:** SQL, Excel, Python, JavaScript, Data Visualization, AI-Assisted Development
 
 **Repository:** [github.com/DavinAnalytics/global-space-exploration-analysis](https://github.com/DavinAnalytics/global-space-exploration-analysis)
 
@@ -19,6 +19,7 @@
 - [Data Cleaning & Preparation](#data-cleaning--preparation)
 - [Analysis & Insights](#analysis--insights)
 - [Visualizations](#visualizations)
+- [Interactive Dashboard](#interactive-dashboard)
 - [Skills Demonstrated](#skills-demonstrated)
 - [How to Reproduce](#how-to-reproduce)
 - [Next Steps](#next-steps)
@@ -337,6 +338,43 @@ I recreated all major insights from the SQL analysis in Excel using PivotTables,
 
 ---
 
+## Interactive Dashboard
+
+**Status:** Completed  
+**File:** [`space-dashboard/bundle.html`](./space-dashboard/bundle.html)  
+**Live Demo:** *(deploy via GitHub Pages — see below)*
+
+To extend the analytical findings beyond static charts, I leveraged AI-assisted development (Claude Code) to rapidly prototype and deploy a fully interactive web dashboard. This approach allowed me to translate the existing SQL and Excel insights into a stakeholder-ready, browser-based experience without a backend or external hosting dependency. The entire dashboard ships as a single self-contained HTML file.
+
+### What It Covers
+
+The dashboard surfaces all 8 analytical questions from the SQL analysis across five interactive sections:
+
+| Section | Content |
+|---------|---------|
+| **Overview** | KPI summary cards, year-over-year trend chart (2000–2025), country mission volume and efficiency |
+| **Countries** | Mission volume ranking, budget efficiency ranking, manned vs. unmanned split, environmental impact |
+| **Technology** | Success rate and cost-efficiency comparison across all 5 propulsion technologies, ranked performance matrix |
+| **Collaboration** | Impact of partnership size (1–4 nations) on success rate and budget |
+| **Cost Analysis** | Top 5 most expensive missions vs. outcomes, top 10 missions ranked by cost-effectiveness (SQL `RANK()` logic) |
+
+### Technical Implementation
+
+- **Stack:** Vanilla JavaScript + Chart.js — no build step or server required; opens directly in any browser
+- **Design:** Custom dark-panel aesthetic with a live mission telemetry ticker, monospace data typography, and color-coded success indicators
+- **AI-Assisted Development:** Used Claude Code to accelerate the frontend build, demonstrating the ability to leverage modern AI tooling to deliver polished, stakeholder-facing artifacts efficiently alongside core data work
+
+### Running the Dashboard
+
+Open `space-dashboard/bundle.html` directly in Chrome or Edge (double-click or right-click → Open with browser). No installation required.
+
+To host publicly via GitHub Pages:
+1. Push this repository to GitHub
+2. Go to **Settings → Pages → Deploy from branch → main**
+3. The dashboard will be live at `https://<your-username>.github.io/<repo-name>/space-dashboard/bundle.html`
+
+---
+
 ## Project Structure
 
 ```
@@ -355,6 +393,8 @@ global-space-exploration-analysis/
 │       ├── space_mission_trends.png
 │       ├── expensive_missions.png
 │       └── cost_effective_missions.png
+├── space-dashboard/
+│   └── bundle.html          ← self-contained  
 └── README.md
 ```
 
@@ -364,7 +404,7 @@ global-space-exploration-analysis/
 
 **Author:** Davin Kim  
 **GitHub:** [github.com/DavinAnalytics](https://github.com/DavinAnalytics)  
-**LinkedIn:** [LinkedIn profile link]
+**LinkedIn:** [[LinkedIn profile link](https://www.linkedin.com/in/davinanalytics/)]
 
 If you have questions about the analysis or data methodology, feel free to reach out!
 
