@@ -290,8 +290,9 @@ Lean and efficient missions are possible and should be used for technology demon
 ### Tools
 - MySQL/SQL Database
 - Python/Pandas
-- Excel/Tableau/Power BI
+- Excel/Tableau
 - Git & GitHub
+- Claude Code AI for quick deployable visualizations
 
 ---
 
@@ -402,11 +403,60 @@ global-space-exploration-analysis/
 
 ---
 
+## How to Reproduce
+
+### Prerequisites
+
+| Tool | Purpose |
+|------|---------|
+| MySQL (8.0+) or compatible SQL client | Run the cleaning and analysis scripts |
+| Microsoft Excel (2016+) or Google Sheets | Open the Excel dashboard |
+| Any modern browser (Chrome, Edge, Firefox) | View the interactive HTML dashboard |
+
+### Steps
+
+**1. Clone the repository**
+```bash
+git clone https://github.com/DavinAnalytics/global-space-exploration-analysis.git
+cd global-space-exploration-analysis
+```
+
+**2. Load the dataset**
+
+Download the raw CSV from [Kaggle](https://www.kaggle.com/datasets/atharvasoundankar/global-space-exploration-dataset-2000-2025) and import it into a new MySQL database:
+```sql
+CREATE DATABASE space_exploration;
+USE space_exploration;
+-- Import the CSV using your SQL client's import wizard, or via LOAD DATA INFILE
+```
+
+**3. Run the data cleaning script**
+```sql
+SOURCE sql/01_data_cleaning.sql;
+```
+This standardizes text fields, fixes the `Collaborating Countries` column, and adds the derived `Total_Countries_Involved` column.
+
+**4. Run the analysis script**
+```sql
+SOURCE sql/02_exploratory_analysis.sql;
+```
+This produces all 8 analytical queries covering country rankings, YoY trends, technology efficiency, collaboration impact, and cost-effectiveness rankings using `RANK()` window functions.
+
+**5. Open the Excel dashboard**
+
+Open [`excel/Global_Space_Exploration_Excel_Dashboard.xlsx`](./excel/Global_Space_Exploration_Excel_Dashboard.xlsx) directly in Excel. All PivotTables and charts are pre-built — no additional setup needed.
+
+**6. Open the interactive web dashboard**
+
+Open [`space-dashboard/index.html`](./space-dashboard/index.html) in any browser (double-click the file). No server or installation required — it runs entirely client-side.
+
+---
+
 ## Contact & Questions
 
 **Author:** Davin Kim  
 **GitHub:** [github.com/DavinAnalytics](https://github.com/DavinAnalytics)  
-**LinkedIn:** [[LinkedIn profile link](https://www.linkedin.com/in/davinanalytics/)]
+**LinkedIn:** [LinkedIn profile link](https://www.linkedin.com/in/davinanalytics/)
 
 If you have questions about the analysis or data methodology, feel free to reach out!
 
