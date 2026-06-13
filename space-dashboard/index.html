@@ -144,6 +144,7 @@
       <div class="nav-item"        data-s="technology">    <span>◆</span> Technology</div>
       <div class="nav-item"        data-s="collaboration"> <span>◇</span> Collaboration</div>
       <div class="nav-item"        data-s="cost">          <span>◎</span> Cost Analysis</div>
+      <div class="nav-item"        data-s="methodology">   <span>◑</span> Methodology</div>
       <div id="sidebar-meta">
         <div id="sidebar-meta-label">Dataset</div>
         <div class="meta-row"><span class="meta-val">3,000</span><span class="meta-lbl">records</span></div>
@@ -190,11 +191,11 @@
           <div class="kpi" style="border-top:2px solid var(--teal);animation-delay:.08s">
             <div class="kpi-eyebrow">Avg Success Rate</div>
             <div class="kpi-val" style="color:var(--teal)">75.0<span class="kpi-unit">%</span></div>
-            <div class="kpi-sub">Stable range 72–78% YoY</div>
+            <div class="kpi-sub">Stable range 72.5–77.1% YoY</div>
           </div>
           <div class="kpi" style="border-top:2px solid var(--amber);animation-delay:.16s">
             <div class="kpi-eyebrow">Avg Mission Budget</div>
-            <div class="kpi-val" style="color:var(--amber)">$25.4<span class="kpi-unit">B</span></div>
+            <div class="kpi-val" style="color:var(--amber)">$25.2<span class="kpi-unit">B</span></div>
             <div class="kpi-sub">Per-mission average spend</div>
           </div>
           <div class="kpi" style="border-top:2px solid var(--teal);animation-delay:.24s">
@@ -301,7 +302,7 @@
 
         <div>
           <div class="sec-title">International Collaboration Impact</div>
-          <div class="sec-desc">Three-nation coalitions optimize both success rate (75.36%) and mission duration (180 days avg). Solo missions carry the highest budget ($26.28B) and the lowest success rate (73.03%) — strongly supporting strategic partnership formation for complex programs like lunar landings or Mars exploration.</div>
+          <div class="sec-desc">Three-nation coalitions achieve the best success rate (75.36%) while keeping budgets competitive at $25.49B avg. Solo missions carry the highest budget ($26.28B) and the lowest success rate (73.03%) — strongly supporting strategic partnership formation for complex programs like lunar landings or Mars exploration.</div>
         </div>
 
         <div class="grid-2">
@@ -330,7 +331,7 @@
 
         <div>
           <div class="sec-title">Cost Analysis &amp; Mission Ranking</div>
-          <div class="sec-desc">At the $50B tier, success rates swing from 50% to 97% — proving raw spending guarantees nothing. The most cost-effective missions achieve 84–94% success at under $0.75B through lean execution and proven propulsion technologies. Nuclear Propulsion and Reusable Rockets dominate the top rankings.</div>
+          <div class="sec-desc">At the $50B tier, success rates swing from 50% to 97% — proving raw spending guarantees nothing. The most cost-effective missions achieve 74–94% success at under $0.75B through lean execution and proven propulsion technologies. Nuclear Propulsion and Reusable Rockets dominate the top rankings.</div>
         </div>
 
         <div class="panel">
@@ -343,6 +344,82 @@
           <div class="eyebrow">SQL Window Function — RANK() by Success Rate / $B</div>
           <div class="ptitle">Top 10 Missions by Cost-Effectiveness</div>
           <table class="dtable" id="cost-table"></table>
+        </div>
+
+      </div>
+
+      <!-- ── METHODOLOGY ── -->
+      <div id="s-methodology" class="section">
+
+        <div>
+          <div class="sec-title">How This Analysis Was Conducted</div>
+          <div class="sec-desc">Synthetic dataset of 3,000 space missions modeled on real-world program data, cleaned and analyzed entirely in SQL and Excel. No predictive model was trained — this is exploratory, descriptive analysis designed to surface actionable strategic insights.</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+
+          <div class="panel" style="border-top:2px solid var(--amber)">
+            <div class="eyebrow" style="color:var(--amber)">01 · Data Source</div>
+            <div class="ptitle">Dataset &amp; Scope</div>
+            <p style="font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:16px">3,000 mission records spanning 10 spacefaring nations across 2000–2025. Each record captures mission outcome, budget, technology type, collaboration partners, environmental impact, and duration.</p>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:7px">
+              <li style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);display:flex;align-items:baseline;gap:8px"><span style="color:var(--amber)">→</span> 3,000 missions × 12 columns</li>
+              <li style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);display:flex;align-items:baseline;gap:8px"><span style="color:var(--amber)">→</span> 10 countries, 2000–2025 (25 yrs)</li>
+              <li style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);display:flex;align-items:baseline;gap:8px"><span style="color:var(--amber)">→</span> Binary success outcome per mission</li>
+              <li style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);display:flex;align-items:baseline;gap:8px"><span style="color:var(--amber)">→</span> 5 propulsion technology categories</li>
+              <li style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);display:flex;align-items:baseline;gap:8px"><span style="color:var(--amber)">→</span> Budget range: $0.58B – $49.97B</li>
+            </ul>
+          </div>
+
+          <div class="panel" style="border-top:2px solid var(--teal)">
+            <div class="eyebrow" style="color:var(--teal)">02 · Data Preparation</div>
+            <div class="ptitle">Cleaning &amp; Engineering</div>
+            <p style="font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:16px">Dataset validated for consistency across all 12 fields. Budget efficiency metric engineered as a derived column. Collaboration size extracted from partner-country lists. Environmental impact binned into three tiers.</p>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:7px">
+              <li style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);display:flex;align-items:baseline;gap:8px"><span style="color:var(--teal)">→</span> No missing values in source data</li>
+              <li style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);display:flex;align-items:baseline;gap:8px"><span style="color:var(--teal)">→</span> Derived: success_rate / budget ($B)</li>
+              <li style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);display:flex;align-items:baseline;gap:8px"><span style="color:var(--teal)">→</span> Partner count → collaboration tier</li>
+              <li style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);display:flex;align-items:baseline;gap:8px"><span style="color:var(--teal)">→</span> YoY aggregation by calendar year</li>
+              <li style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);display:flex;align-items:baseline;gap:8px"><span style="color:var(--teal)">→</span> Environmental impact: Low/Med/High</li>
+            </ul>
+          </div>
+
+          <div class="panel" style="border-top:2px solid var(--t3)">
+            <div class="eyebrow">03 · Analysis</div>
+            <div class="ptitle">Findings &amp; Techniques</div>
+            <p style="font-size:13px;color:var(--t2);line-height:1.7;margin-bottom:16px">Group-level aggregations computed across 5 analytical dimensions. SQL window functions (RANK, ROW_NUMBER) used to surface cost-effectiveness rankings. Cross-dimensional comparisons validated in Excel pivot tables.</p>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:7px">
+              <li style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);display:flex;align-items:baseline;gap:8px"><span style="color:var(--t2)">→</span> SQL · Excel · Data Visualization</li>
+              <li style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);display:flex;align-items:baseline;gap:8px"><span style="color:var(--t2)">→</span> RANK() window fn for cost scoring</li>
+              <li style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);display:flex;align-items:baseline;gap:8px"><span style="color:var(--t2)">→</span> GROUP BY across 5 dimensions</li>
+              <li style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);display:flex;align-items:baseline;gap:8px"><span style="color:var(--t2)">→</span> Pivot cross-validation in Excel</li>
+              <li style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);display:flex;align-items:baseline;gap:8px"><span style="color:var(--t2)">→</span> Descriptive analysis — no ML model</li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div class="panel">
+          <div class="eyebrow">Key Analytical Decisions</div>
+          <div class="ptitle" style="margin-bottom:16px">Design Choices &amp; Rationale</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0">
+            <div style="padding:14px 16px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--amber);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px">Efficiency Metric</div>
+              <div style="font-size:13px;color:var(--t2);line-height:1.65">Success rate divided by average budget in $B was chosen as the primary ROI proxy. This penalizes high-spend programs that don't proportionally improve outcomes and rewards lean execution.</div>
+            </div>
+            <div style="padding:14px 16px;border-bottom:1px solid var(--border)">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--amber);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px">YoY Trend Reading</div>
+              <div style="font-size:13px;color:var(--t2);line-height:1.65">25-year trend shows no statistically meaningful upward trajectory in success rate (range: 72.5%–77.1%). This was interpreted as a stable industry baseline, not stagnation — consistent with mature aerospace programs.</div>
+            </div>
+            <div style="padding:14px 16px;border-right:1px solid var(--border)">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--teal);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px">Collaboration Sizing</div>
+              <div style="font-size:13px;color:var(--t2);line-height:1.65">Partnership tiers (1–4 nations) were analyzed rather than specific bilateral pairs. This surfaces structural patterns — the 3-nation sweet spot — without overfitting to individual country dyads.</div>
+            </div>
+            <div style="padding:14px 16px">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--teal);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px">Cost-Effectiveness Score</div>
+              <div style="font-size:13px;color:var(--t2);line-height:1.65">Top-10 missions ranked using a composite score of success rate relative to budget. SQL RANK() window function applied over the full dataset to produce a normalized, reproducible ranking across all 3,000 records.</div>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -686,7 +763,8 @@ function initCost() {
 // ═══════════════════════════════════════════════════════════
 // NAVIGATION
 // ═══════════════════════════════════════════════════════════
-const INIT_FNS = {overview:initOverview, countries:initCountries, technology:initTechnology, collaboration:initCollaboration, cost:initCost};
+function initMethodology() { /* static — no charts needed */ }
+const INIT_FNS = {overview:initOverview, countries:initCountries, technology:initTechnology, collaboration:initCollaboration, cost:initCost, methodology:initMethodology};
 const initialized = new Set();
 
 function showSection(id) {
