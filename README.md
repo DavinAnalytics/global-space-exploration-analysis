@@ -343,7 +343,7 @@ I recreated all major insights from the SQL analysis in Excel using PivotTables,
 ## Interactive Dashboard
 
 **Status:** Completed  
-**File:** [`space-dashboard/bundle.html`](./space-dashboard/bundle.html)  
+**File:** [`space-dashboard/index.html`](./space-dashboard/index.html)  
 **Live Demo:** *(deploy via GitHub Pages — see below)*
 
 To extend the analytical findings beyond static charts, I leveraged AI-assisted development (Claude Code) to rapidly prototype and deploy a fully interactive web dashboard. This approach allowed me to translate the existing SQL and Excel insights into a stakeholder-ready, browser-based experience without a backend or external hosting dependency. The entire dashboard ships as a single self-contained HTML file.
@@ -368,12 +368,12 @@ The dashboard surfaces all 8 analytical questions from the SQL analysis across f
 
 ### Running the Dashboard
 
-Open `space-dashboard/bundle.html` directly in Chrome or Edge (double-click or right-click → Open with browser). No installation required.
+Open `space-dashboard/index.html` directly in Chrome or Edge (double-click or right-click → Open with browser). No installation required.
 
 To host publicly via GitHub Pages:
 1. Push this repository to GitHub
 2. Go to **Settings → Pages → Deploy from branch → main**
-3. The dashboard will be live at `https://<your-username>.github.io/<repo-name>/space-dashboard/bundle.html`
+3. The dashboard will be live at `https://<your-username>.github.io/<repo-name>/space-dashboard/index.html`
 
 ---
 
@@ -396,7 +396,7 @@ global-space-exploration-analysis/
 │       ├── expensive_missions.png
 │       └── cost_effective_missions.png
 ├── space-dashboard/
-│   └── bundle.html          ← self-contained  
+│   └── index.html          ← self-contained  
 └── README.md
 ```
 
