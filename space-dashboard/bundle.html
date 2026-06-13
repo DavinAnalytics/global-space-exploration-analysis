@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Global Space Exploration — Mission Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --base:   #080A10;  --panel:  #0D1117;  --raised: #161B26;
+      --amber:  #F5A623;  --as:     rgba(245,166,35,.14);
+      --teal:   #00C9A7;  --ts:     rgba(0,201,167,.14);
+      --red:    #FF4757;  --rs:     rgba(255,71,87,.14);
+      --t1:     #CDD5E0;  --t2:     #8892A4;  --t3:     #5A6478;
+      --border: #1C2333;
+    }
+    html,body { height:100%; background:var(--base); color:var(--t1); font-family:'DM Sans',sans-serif; }
+    #app { display:flex; flex-direction:column; min-height:100%; }
+
+    /* ── Ticker ── */
+    #ticker { background:#0A0C14; border-bottom:1px solid var(--border); height:38px; display:flex; align-items:center; overflow:hidden; position:relative; flex-shrink:0; }
+    #ticker-badge { background:var(--amber); color:#000; height:100%; padding:0 14px; display:flex; align-items:center; flex-shrink:0; z-index:2; font-family:'JetBrains Mono',monospace; font-size:10px; font-weight:700; letter-spacing:.14em; }
+    #ticker-fade-l { position:absolute; left:116px; top:0; bottom:0; width:40px; background:linear-gradient(to right,#0A0C14,transparent); z-index:2; pointer-events:none; }
+    #ticker-fade-r { position:absolute; right:0; top:0; bottom:0; width:50px; background:linear-gradient(to left,#0A0C14,transparent); z-index:2; pointer-events:none; }
+    #ticker-scroll { overflow:hidden; flex:1; }
+    @keyframes ticker { from { transform:translateX(0) } to { transform:translateX(-50%) } }
+    #ticker-track { display:flex; width:max-content; animation:ticker 90s linear infinite; white-space:nowrap; }
+    #ticker-track:hover { animation-play-state:paused; }
+    .t-item { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--t2); padding-right:52px; }
+
+    /* ── Layout ── */
+    #layout { display:flex; flex:1; overflow:hidden; }
+    #sidebar { width:210px; flex-shrink:0; background:var(--panel); border-right:1px solid var(--border); padding:20px 10px; display:flex; flex-direction:column; gap:2px; }
+    #sidebar-label { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--t3); letter-spacing:.18em; text-transform:uppercase; padding:0 8px; margin-bottom:14px; }
+    .nav-item { display:flex; align-items:center; gap:10px; padding:9px 14px; border-radius:3px; cursor:pointer; font-size:12px; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:var(--t3); border-left:2px solid transparent; transition:color .12s,background .12s,border-color .12s; }
+    .nav-item:hover { color:var(--t1); background:var(--raised); }
+    .nav-item.active { color:var(--amber); border-left-color:var(--amber); background:var(--as); }
+    #sidebar-meta { margin-top:auto; padding-top:18px; border-top:1px solid var(--border); }
+    #sidebar-meta-label { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--t3); letter-spacing:.14em; text-transform:uppercase; margin-bottom:10px; padding:0 4px; }
+    .meta-row { display:flex; justify-content:space-between; padding:3px 4px; }
+    .meta-val { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--t1); font-weight:600; }
+    .meta-lbl { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--t3); }
+
+    /* ── Main ── */
+    #main { flex:1; overflow-y:auto; padding:24px; }
+    #page-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--border); }
+    #page-eyebrow { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--t3); letter-spacing:.18em; text-transform:uppercase; margin-bottom:7px; }
+    #page-title { font-family:'Space Grotesk',sans-serif; font-size:26px; font-weight:700; color:var(--t1); letter-spacing:-.025em; line-height:1.1; }
+    #page-sub { font-size:13px; color:var(--t3); margin-top:6px; }
+    #status-box { background:var(--panel); border:1px solid var(--border); border-radius:4px; padding:10px 16px; text-align:right; flex-shrink:0; }
+    #status-label { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--t3); letter-spacing:.14em; text-transform:uppercase; margin-bottom:5px; }
+    #status-val { display:flex; align-items:center; gap:7px; justify-content:flex-end; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
+    #status-dot { width:7px; height:7px; background:var(--teal); border-radius:50%; animation:blink 2s ease-in-out infinite; }
+    #status-text { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--teal); }
+
+    /* ── Sections ── */
+    .section { display:none; }
+    .section.active { display:flex; flex-direction:column; gap:14px; }
+
+    /* ── Panel ── */
+    .panel { background:var(--panel); border:1px solid var(--border); border-radius:5px; padding:20px; }
+    .eyebrow { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.18em; text-transform:uppercase; color:var(--t3); margin-bottom:5px; }
+    .ptitle { font-family:'Space Grotesk',sans-serif; font-size:15px; font-weight:600; color:var(--t1); margin-bottom:18px; }
+    .chart-wrap { position:relative; }
+    .h190 { height:190px; }
+    .h210 { height:210px; }
+    .h225 { height:225px; }
+    .h240 { height:240px; }
+
+    /* ── KPI cards ── */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+    .kpi-grid { display:flex; gap:12px; flex-wrap:wrap; }
+    .kpi { background:var(--panel); border:1px solid var(--border); border-radius:5px; padding:16px 20px; flex:1; min-width:150px; animation:fadeUp .5s ease both; }
+    .kpi-eyebrow { font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.18em; text-transform:uppercase; color:var(--t3); margin-bottom:6px; }
+    .kpi-val { font-family:'JetBrains Mono',monospace; font-size:30px; font-weight:700; letter-spacing:-.03em; line-height:1.05; }
+    .kpi-unit { font-size:14px; font-weight:400; color:var(--t3); margin-left:3px; }
+    .kpi-sub { font-size:12px; color:var(--t3); margin-top:5px; }
+
+    /* ── Grid helpers ── */
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+    .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    .grid-5 { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
+    .grid-10 { display:grid; grid-template-columns:repeat(5,1fr); gap:8px; }
+
+    /* ── Section headings ── */
+    .sec-title { font-family:'Space Grotesk',sans-serif; font-size:20px; font-weight:600; color:var(--t1); margin-bottom:8px; }
+    .sec-desc { font-size:13px; color:var(--t3); line-height:1.65; max-width:630px; margin-bottom:6px; }
+
+    /* ── Tables ── */
+    .dtable { width:100%; border-collapse:collapse; }
+    .dtable th { text-align:left; padding:8px 10px; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:.12em; text-transform:uppercase; color:var(--t3); border-bottom:1px solid var(--border); }
+    .dtable td { padding:9px 10px; border-bottom:1px solid var(--border); }
+    .dtable tr:last-child td { border-bottom:none; }
+
+    /* ── Insight mini-cards ── */
+    .insight-card { text-align:center; padding:14px 10px; background:var(--base); border-radius:4px; border:1px solid var(--border); }
+    .insight-label { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--t3); letter-spacing:.14em; text-transform:uppercase; margin-bottom:10px; }
+    .insight-big { font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:700; letter-spacing:-.02em; }
+    .insight-sub { font-size:11px; color:var(--t3); margin-top:5px; }
+    .insight-meta { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--t3); margin-top:3px; }
+
+    /* ── Country mini-cards ── */
+    .country-mini { text-align:center; padding:12px 8px; }
+    .cm-label { font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--t3); letter-spacing:.1em; text-transform:uppercase; margin-bottom:8px; }
+    .cm-val { font-family:'JetBrains Mono',monospace; font-size:20px; font-weight:700; }
+    .cm-sub { font-size:10px; color:var(--t3); margin-top:4px; font-family:'DM Sans',sans-serif; }
+    .cm-m { font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--t3); margin-top:3px; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width:4px; height:4px; }
+    ::-webkit-scrollbar-track { background:var(--base); }
+    ::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+    @media (max-width:768px) { #sidebar{display:none;} .grid-2{grid-template-columns:1fr;} .grid-4{grid-template-columns:1fr 1fr;} }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ── Ticker ── -->
+  <div id="ticker">
+    <div id="ticker-badge">LIVE TELEMETRY</div>
+    <div id="ticker-fade-l"></div>
+    <div id="ticker-scroll"><div id="ticker-track"></div></div>
+    <div id="ticker-fade-r"></div>
+  </div>
+
+  <div id="layout">
+
+    <!-- ── Sidebar ── -->
+    <nav id="sidebar">
+      <div id="sidebar-label">Navigation</div>
+      <div class="nav-item active" data-s="overview">      <span>◉</span> Overview</div>
+      <div class="nav-item"        data-s="countries">     <span>◈</span> Countries</div>
+      <div class="nav-item"        data-s="technology">    <span>◆</span> Technology</div>
+      <div class="nav-item"        data-s="collaboration"> <span>◇</span> Collaboration</div>
+      <div class="nav-item"        data-s="cost">          <span>◎</span> Cost Analysis</div>
+      <div id="sidebar-meta">
+        <div id="sidebar-meta-label">Dataset</div>
+        <div class="meta-row"><span class="meta-val">3,000</span><span class="meta-lbl">records</span></div>
+        <div class="meta-row"><span class="meta-val">12</span><span class="meta-lbl">columns</span></div>
+        <div class="meta-row"><span class="meta-val">10</span><span class="meta-lbl">countries</span></div>
+        <div class="meta-row"><span class="meta-val">2000–2025</span><span class="meta-lbl">period</span></div>
+      </div>
+    </nav>
+
+    <!-- ── Main ── -->
+    <main id="main">
+
+      <!-- Page header -->
+      <div id="page-header">
+        <div>
+          <div id="page-eyebrow">Portfolio Project · Davin Kim · github.com/DavinAnalytics</div>
+          <div id="page-title">Global Space Exploration Analysis</div>
+          <div id="page-sub">3,000+ missions &nbsp;·&nbsp; 10 countries &nbsp;·&nbsp; 2000–2025 &nbsp;·&nbsp; SQL · Excel · Data Visualization</div>
+        </div>
+        <div id="status-box">
+          <div id="status-label">Status</div>
+          <div id="status-val">
+            <div id="status-dot"></div>
+            <span id="status-text">ANALYSIS COMPLETE</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── OVERVIEW ── -->
+      <div id="s-overview" class="section active">
+
+        <div class="kpi-grid">
+          <div class="kpi" style="border-top:2px solid var(--amber);animation-delay:0s">
+            <div class="kpi-eyebrow">Total Missions</div>
+            <div class="kpi-val" style="color:var(--amber)">3,000<span class="kpi-unit">+</span></div>
+            <div class="kpi-sub">Mission records analyzed</div>
+          </div>
+          <div class="kpi" style="border-top:2px solid var(--teal);animation-delay:.08s">
+            <div class="kpi-eyebrow">Avg Success Rate</div>
+            <div class="kpi-val" style="color:var(--teal)">75.0<span class="kpi-unit">%</span></div>
+            <div class="kpi-sub">Stable range 72–78% YoY</div>
+          </div>
+          <div class="kpi" style="border-top:2px solid var(--amber);animation-delay:.16s">
+            <div class="kpi-eyebrow">Avg Mission Budget</div>
+            <div class="kpi-val" style="color:var(--amber)">$25.4<span class="kpi-unit">B</span></div>
+            <div class="kpi-sub">Per-mission average spend</div>
+          </div>
+          <div class="kpi" style="border-top:2px solid var(--teal);animation-delay:.24s">
+            <div class="kpi-eyebrow">Countries Analyzed</div>
+            <div class="kpi-val" style="color:var(--teal)">10<span class="kpi-unit"></span></div>
+            <div class="kpi-sub">Global coverage 2000–2025</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="eyebrow">Year-over-Year Trends 2000–2025</div>
+          <div class="ptitle">Mission Volume vs Success Rate — Stable Performance, No Long-Term Upward Trend</div>
+          <div class="chart-wrap h240"><canvas id="c-trend"></canvas></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="eyebrow">Mission Volume</div>
+            <div class="ptitle">Total Missions by Country</div>
+            <div class="chart-wrap h190"><canvas id="c-ov-missions"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="eyebrow">Budget Efficiency</div>
+            <div class="ptitle">Success Rate per $Billion</div>
+            <div class="chart-wrap h190"><canvas id="c-ov-eff"></canvas></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── COUNTRIES ── -->
+      <div id="s-countries" class="section">
+
+        <div>
+          <div class="sec-title">Country Performance Analysis</div>
+          <div class="sec-desc">China and the UK tie for mission volume at 322 missions each. Yet Germany achieves the highest budget efficiency at 3.16 success points per $B despite the fewest total missions — demonstrating that scale and efficiency are independent dimensions.</div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="eyebrow">Mission Volume</div>
+            <div class="ptitle">Total Missions by Country</div>
+            <div class="chart-wrap h190"><canvas id="c-ct-missions"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="eyebrow">Budget Efficiency</div>
+            <div class="ptitle">Success per $Billion</div>
+            <div class="chart-wrap h190"><canvas id="c-ct-eff"></canvas></div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="eyebrow">Mission Classification</div>
+            <div class="ptitle">Manned vs Unmanned Split</div>
+            <div class="chart-wrap h210"><canvas id="c-mission-type"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="eyebrow">Sustainability Impact</div>
+            <div class="ptitle">Success Rate by Environmental Impact Level</div>
+            <div class="chart-wrap h210"><canvas id="c-env"></canvas></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="eyebrow">Per-Country Efficiency Breakdown</div>
+          <div class="ptitle" style="margin-bottom:14px">Budget Efficiency Ranking — Success Points per $Billion Spent</div>
+          <div class="grid-10" id="country-mini-grid"></div>
+        </div>
+
+      </div>
+
+      <!-- ── TECHNOLOGY ── -->
+      <div id="s-technology" class="section">
+
+        <div>
+          <div class="sec-title">Technology Efficiency Analysis</div>
+          <div class="sec-desc">Reusable Rocket technology leads in raw success rate (76.23%) while Nuclear Propulsion delivers the best cost-efficiency (3.05 success/$B) at the lowest average budget ($24.35B). AI Navigation carries the highest cost ($26.1B) with the worst ROI — a data-backed caution against high-budget technology bets without proven track records.</div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="eyebrow">Success Rate</div>
+            <div class="ptitle">Avg Success Rate by Technology</div>
+            <div class="chart-wrap h190"><canvas id="c-tech-success"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="eyebrow">Cost-Efficiency</div>
+            <div class="ptitle">Success per $Billion — Nuclear Leads ROI</div>
+            <div class="chart-wrap h190"><canvas id="c-tech-eff"></canvas></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="eyebrow">Full Performance Matrix — Ranked by Cost-Efficiency</div>
+          <div class="ptitle">Technology Rankings</div>
+          <table class="dtable" id="tech-table"></table>
+        </div>
+
+      </div>
+
+      <!-- ── COLLABORATION ── -->
+      <div id="s-collaboration" class="section">
+
+        <div>
+          <div class="sec-title">International Collaboration Impact</div>
+          <div class="sec-desc">Three-nation coalitions optimize both success rate (75.36%) and mission duration (180 days avg). Solo missions carry the highest budget ($26.28B) and the lowest success rate (73.03%) — strongly supporting strategic partnership formation for complex programs like lunar landings or Mars exploration.</div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="eyebrow">Success Rate by Partnership Size</div>
+            <div class="ptitle">3-Nation Coalitions Achieve Best Outcomes</div>
+            <div class="chart-wrap h190"><canvas id="c-collab-success"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="eyebrow">Budget by Partnership Size</div>
+            <div class="ptitle">Solo Missions Cost Most — Achieve Least</div>
+            <div class="chart-wrap h190"><canvas id="c-collab-budget"></canvas></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="eyebrow">At a Glance</div>
+          <div class="ptitle" style="margin-bottom:14px">Collaboration Impact Summary</div>
+          <div class="grid-4" id="collab-insight-grid"></div>
+        </div>
+
+      </div>
+
+      <!-- ── COST ── -->
+      <div id="s-cost" class="section">
+
+        <div>
+          <div class="sec-title">Cost Analysis &amp; Mission Ranking</div>
+          <div class="sec-desc">At the $50B tier, success rates swing from 50% to 97% — proving raw spending guarantees nothing. The most cost-effective missions achieve 84–94% success at under $0.75B through lean execution and proven propulsion technologies. Nuclear Propulsion and Reusable Rockets dominate the top rankings.</div>
+        </div>
+
+        <div class="panel">
+          <div class="eyebrow">Budget vs Outcome — Top 5 Most Expensive Missions</div>
+          <div class="ptitle">Highest Budgets Do Not Guarantee Best Results</div>
+          <div class="chart-wrap h225"><canvas id="c-expensive"></canvas></div>
+        </div>
+
+        <div class="panel">
+          <div class="eyebrow">SQL Window Function — RANK() by Success Rate / $B</div>
+          <div class="ptitle">Top 10 Missions by Cost-Effectiveness</div>
+          <table class="dtable" id="cost-table"></table>
+        </div>
+
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+'use strict';
+
+// ═══════════════════════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════════════════════
+const D = {
+  countries: [
+    {name:'China',   missions:322, success:74.99, budget:25.66, eff:2.92},
+    {name:'UK',      missions:322, success:75.04, budget:24.93, eff:3.01},
+    {name:'Israel',  missions:313, success:75.10, budget:25.20, eff:2.91},
+    {name:'France',  missions:311, success:74.90, budget:25.30, eff:2.93},
+    {name:'UAE',     missions:305, success:75.20, budget:25.10, eff:3.04},
+    {name:'USA',     missions:304, success:74.80, budget:25.50, eff:2.84},
+    {name:'India',   missions:294, success:74.70, budget:25.40, eff:2.84},
+    {name:'Japan',   missions:290, success:75.00, budget:25.30, eff:2.96},
+    {name:'Russia',  missions:289, success:74.90, budget:25.20, eff:2.93},
+    {name:'Germany', missions:250, success:75.10, budget:24.70, eff:3.16},
+  ],
+  technology: [
+    {name:'Reusable Rocket',    short:'Reusable',    success:76.23, budget:24.97, eff:2.99},
+    {name:'Traditional Rocket', short:'Traditional', success:75.00, budget:25.56, eff:2.95},
+    {name:'Solar Propulsion',   short:'Solar',       success:74.63, budget:25.38, eff:2.94},
+    {name:'Nuclear Propulsion', short:'Nuclear',     success:74.60, budget:24.35, eff:3.05},
+    {name:'AI Navigation',      short:'AI Nav',      success:74.40, budget:26.10, eff:2.85},
+  ],
+  collab: [
+    {label:'Solo (1)',  n:1, missions:92,   success:73.03, budget:26.28, eff:2.78},
+    {label:'2-Nation',  n:2, missions:1146, success:74.83, budget:25.33, eff:2.95},
+    {label:'3-Nation',  n:3, missions:1071, success:75.36, budget:25.49, eff:2.96},
+    {label:'4-Nation',  n:4, missions:691,  success:74.92, budget:25.39, eff:2.95},
+  ],
+  missionType: [
+    {type:'Manned',   missions:1528, success:75.23, budget:25.46},
+    {type:'Unmanned', missions:1472, success:74.73, budget:25.40},
+  ],
+  environment: [
+    {impact:'Medium', success:75.33, budget:25.68, missions:1032},
+    {impact:'Low',    success:75.09, budget:25.17, missions:1010},
+    {impact:'High',   success:74.50, budget:25.44, missions:958 },
+  ],
+  trends: [
+    {y:2000,m:108,s:73.2},{y:2001,m:112,s:74.1},{y:2002,m:109,s:72.8},
+    {y:2003,m:115,s:75.3},{y:2004,m:118,s:74.6},{y:2005,m:113,s:76.1},
+    {y:2006,m:116,s:73.9},{y:2007,m:120,s:75.8},{y:2008,m:114,s:74.2},
+    {y:2009,m:111,s:72.5},{y:2010,m:117,s:75.4},{y:2011,m:119,s:76.2},
+    {y:2012,m:115,s:74.8},{y:2013,m:112,s:73.6},{y:2014,m:118,s:75.1},
+    {y:2015,m:116,s:76.5},{y:2016,m:113,s:74.3},{y:2017,m:120,s:75.7},
+    {y:2018,m:117,s:76.0},{y:2019,m:114,s:74.9},{y:2020,m:116,s:75.2},
+    {y:2021,m:118,s:77.1},{y:2022,m:115,s:76.3},{y:2023,m:119,s:75.8},
+    {y:2024,m:117,s:76.4},{y:2025,m:114,s:75.9},
+  ],
+  expensive: [
+    {name:'Automated uniform forecast',            country:'France', tech:'AI Navigation',      budget:49.97, success:83},
+    {name:'Implemented global time-frame',         country:'China',  tech:'Traditional Rocket', budget:49.97, success:55},
+    {name:'De-engineered coherent infrastructure', country:'Japan',  tech:'Solar Propulsion',   budget:49.93, success:50},
+    {name:'Centralized 5thgen core',               country:'Israel', tech:'Reusable Rocket',    budget:49.92, success:97},
+    {name:'Multi-layered 24hr adapter',            country:'USA',    tech:'Solar Propulsion',   budget:49.92, success:67},
+  ],
+  costEffective: [
+    {rank:1,  name:'Open-architected uniform flexibility',   country:'USA',     tech:'Nuclear Propulsion', budget:0.58, success:84, score:144.83},
+    {rank:2,  name:'Digitized leadingedge data-warehouse',   country:'USA',     tech:'Reusable Rocket',    budget:0.67, success:94, score:140.30},
+    {rank:3,  name:'Adaptive bandwidth-monitored workforce', country:'China',   tech:'AI Navigation',      budget:0.56, success:75, score:133.93},
+    {rank:4,  name:'Synergized mission-critical platform',   country:'Germany', tech:'Nuclear Propulsion', budget:0.61, success:79, score:129.51},
+    {rank:5,  name:'Proactive zero-tolerance framework',     country:'Japan',   tech:'Reusable Rocket',    budget:0.72, success:91, score:126.39},
+    {rank:6,  name:'Distributed scalable interface',         country:'UK',      tech:'Solar Propulsion',   budget:0.65, success:82, score:126.15},
+    {rank:7,  name:'Optimized multi-tiered capacity',        country:'UAE',     tech:'Nuclear Propulsion', budget:0.59, success:74, score:125.42},
+    {rank:8,  name:'Integrated real-time bandwidth',         country:'India',   tech:'AI Navigation',      budget:0.68, success:84, score:123.53},
+    {rank:9,  name:'Centralized neutral methodology',        country:'France',  tech:'Reusable Rocket',    budget:0.73, success:89, score:121.92},
+    {rank:10, name:'Secured cross-platform solution',        country:'Russia',  tech:'Traditional Rocket', budget:0.69, success:83, score:120.29},
+  ],
+};
+
+// ═══════════════════════════════════════════════════════════
+// CHART HELPERS
+// ═══════════════════════════════════════════════════════════
+const AMBER = '#F5A623', AS = 'rgba(245,166,35,.16)';
+const TEAL  = '#00C9A7', TS = 'rgba(0,201,167,.16)';
+const RED   = '#FF4757', RS = 'rgba(255,71,87,.16)';
+const T2 = '#8892A4', T3 = '#5A6478', BRD = '#1C2333';
+
+const tip = {
+  backgroundColor: '#161B26', borderColor: BRD, borderWidth: 1,
+  titleColor: '#CDD5E0', bodyColor: T2,
+  titleFont: {family:'Space Grotesk', weight:'600', size:13},
+  bodyFont:  {family:'JetBrains Mono', size:11},
+  padding: 12, cornerRadius: 4,
+};
+
+const axis = {
+  grid: {color: BRD, borderColor: BRD},
+  ticks: {color: T3, font: {family:'JetBrains Mono', size:10}},
+};
+
+const charts = {};
+function mkChart(id, cfg) {
+  if (charts[id]) { charts[id].destroy(); }
+  charts[id] = new Chart(document.getElementById(id), cfg);
+}
+
+// ═══════════════════════════════════════════════════════════
+// SECTION INITIALIZERS
+// ═══════════════════════════════════════════════════════════
+
+function initOverview() {
+  // YoY trend
+  mkChart('c-trend', {
+    type: 'bar',
+    data: {
+      labels: D.trends.map(d => d.y),
+      datasets: [
+        {type:'bar',  label:'Missions / yr', data:D.trends.map(d=>d.m), backgroundColor:AS, borderColor:AMBER, borderWidth:1, yAxisID:'yM'},
+        {type:'line', label:'Success Rate (%)', data:D.trends.map(d=>d.s), borderColor:TEAL, backgroundColor:'transparent', borderWidth:2, pointRadius:0, pointHoverRadius:5, pointHoverBackgroundColor:TEAL, tension:.35, yAxisID:'yS'},
+      ],
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins: {
+        legend: {display:true, labels:{color:T2, font:{family:'JetBrains Mono',size:11}, boxWidth:12, padding:16}},
+        tooltip: {mode:'index', intersect:false, ...tip},
+      },
+      scales: {
+        x: {...axis, ticks:{...axis.ticks, maxTicksLimit:13}},
+        yM: {...axis, position:'left',  min:80, max:140, ticks:{...axis.ticks, callback:v=>v+' m'}},
+        yS: {...axis, position:'right', min:70, max:80,  grid:{display:false}, ticks:{...axis.ticks, callback:v=>v+'%'}},
+      },
+    },
+  });
+
+  // Country missions
+  const byCt = [...D.countries].sort((a,b)=>b.missions-a.missions);
+  mkChart('c-ov-missions', {
+    type:'bar',
+    data: {
+      labels: byCt.map(c=>c.name),
+      datasets:[{data:byCt.map(c=>c.missions), backgroundColor:byCt.map(c=>c.missions>=320?AMBER:AS), borderColor:byCt.map(c=>c.missions>=320?AMBER:'transparent'), borderWidth:1, borderRadius:3}],
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{...tip, callbacks:{label:ctx=>` ${ctx.parsed.y} missions`}}},
+      scales:{x:{...axis}, y:{...axis, min:200, max:340}},
+    },
+  });
+
+  // Country efficiency
+  const byEff = [...D.countries].sort((a,b)=>b.eff-a.eff);
+  mkChart('c-ov-eff', {
+    type:'bar',
+    data:{
+      labels:byEff.map(c=>c.name),
+      datasets:[{data:byEff.map(c=>c.eff), backgroundColor:byEff.map(c=>c.eff>=3.0?TEAL:TS), borderColor:byEff.map(c=>c.eff>=3.0?TEAL:'transparent'), borderWidth:1, borderRadius:3}],
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{...tip, callbacks:{label:ctx=>` ${ctx.parsed.y.toFixed(2)} success / $B`}}},
+      scales:{x:{...axis}, y:{...axis, min:2.7, max:3.3, ticks:{...axis.ticks, callback:v=>v.toFixed(2)}}},
+    },
+  });
+}
+
+function initCountries() {
+  const byCt  = [...D.countries].sort((a,b)=>b.missions-a.missions);
+  const byEff = [...D.countries].sort((a,b)=>b.eff-a.eff);
+
+  mkChart('c-ct-missions', {
+    type:'bar',
+    data:{labels:byCt.map(c=>c.name), datasets:[{data:byCt.map(c=>c.missions), backgroundColor:byCt.map(c=>c.missions>=320?AMBER:AS), borderColor:byCt.map(c=>c.missions>=320?AMBER:'transparent'), borderWidth:1, borderRadius:3}]},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{...tip, callbacks:{label:ctx=>` ${ctx.parsed.y} missions`}}}, scales:{x:{...axis}, y:{...axis, min:200, max:340}}},
+  });
+
+  mkChart('c-ct-eff', {
+    type:'bar',
+    data:{labels:byEff.map(c=>c.name), datasets:[{data:byEff.map(c=>c.eff), backgroundColor:byEff.map(c=>c.eff>=3.0?TEAL:TS), borderColor:byEff.map(c=>c.eff>=3.0?TEAL:'transparent'), borderWidth:1, borderRadius:3}]},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{...tip, callbacks:{label:ctx=>` ${ctx.parsed.y.toFixed(2)} success / $B`}}}, scales:{x:{...axis}, y:{...axis, min:2.7, max:3.3, ticks:{...axis.ticks, callback:v=>v.toFixed(2)}}}},
+  });
+
+  mkChart('c-mission-type', {
+    type:'doughnut',
+    data:{
+      labels:D.missionType.map(m=>m.type),
+      datasets:[{data:D.missionType.map(m=>m.missions), backgroundColor:[AMBER,AS], borderColor:'#0D1117', borderWidth:4, hoverOffset:6}],
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'65%',
+      plugins:{
+        legend:{display:true, position:'bottom', labels:{color:T2, font:{family:'JetBrains Mono',size:11}, boxWidth:12, padding:20}},
+        tooltip:{...tip, callbacks:{label:ctx=>` ${ctx.label}: ${ctx.parsed.toLocaleString()} missions`}},
+      },
+    },
+  });
+
+  mkChart('c-env', {
+    type:'bar',
+    data:{
+      labels:D.environment.map(e=>e.impact+' Impact'),
+      datasets:[{data:D.environment.map(e=>e.success), backgroundColor:[TS,AS,RS], borderColor:[TEAL,AMBER,RED], borderWidth:1, borderRadius:3}],
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{...tip, callbacks:{label:ctx=>` ${ctx.parsed.y.toFixed(2)}% success`, afterLabel:ctx=>` ${D.environment[ctx.dataIndex].missions} missions`}}},
+      scales:{x:{...axis}, y:{...axis, min:73, max:76.5, ticks:{...axis.ticks, callback:v=>v+'%'}}},
+    },
+  });
+
+  // Per-country mini grid
+  const grid = document.getElementById('country-mini-grid');
+  const byEffAll = [...D.countries].sort((a,b)=>b.eff-a.eff);
+  grid.innerHTML = byEffAll.map(c => `
+    <div class="country-mini">
+      <div class="cm-label">${c.name}</div>
+      <div class="cm-val" style="color:${c.eff>=3.0?'var(--teal)':'var(--amber)'}">${c.eff.toFixed(2)}</div>
+      <div class="cm-sub">success/$B</div>
+      <div class="cm-m">${c.missions} missions</div>
+    </div>`).join('');
+}
+
+function initTechnology() {
+  const bySuc = [...D.technology].sort((a,b)=>b.success-a.success);
+  const byEff = [...D.technology].sort((a,b)=>b.eff-a.eff);
+
+  mkChart('c-tech-success', {
+    type:'bar',
+    data:{labels:bySuc.map(t=>t.short), datasets:[{data:bySuc.map(t=>t.success), backgroundColor:bySuc.map(t=>t.success>=76?AMBER:AS), borderColor:bySuc.map(t=>t.success>=76?AMBER:'transparent'), borderWidth:1, borderRadius:3}]},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{...tip, callbacks:{label:ctx=>` ${ctx.parsed.y.toFixed(2)}% success rate`}}}, scales:{x:{...axis}, y:{...axis, min:73.5, max:77, ticks:{...axis.ticks, callback:v=>v+'%'}}}},
+  });
+
+  mkChart('c-tech-eff', {
+    type:'bar',
+    data:{labels:byEff.map(t=>t.short), datasets:[{data:byEff.map(t=>t.eff), backgroundColor:byEff.map(t=>t.eff>=3.0?TEAL:TS), borderColor:byEff.map(t=>t.eff>=3.0?TEAL:'transparent'), borderWidth:1, borderRadius:3}]},
+    options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{...tip, callbacks:{label:ctx=>` ${ctx.parsed.y.toFixed(2)} success / $B`}}}, scales:{x:{...axis}, y:{...axis, min:2.75, max:3.2, ticks:{...axis.ticks, callback:v=>v.toFixed(2)}}}},
+  });
+
+  // Tech table
+  const tbl = document.getElementById('tech-table');
+  const ranked = [...D.technology].sort((a,b)=>b.eff-a.eff);
+  tbl.innerHTML = `
+    <thead><tr>
+      <th>Rank</th><th>Technology</th><th>Success Rate</th><th>Avg Budget</th><th>Success / $B</th>
+    </tr></thead>
+    <tbody>${ranked.map((t,i) => `
+      <tr>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:${i===0?AMBER:T3};font-weight:${i===0?700:400}">#${i+1}</td>
+        <td style="font-family:'DM Sans',sans-serif;font-size:13px;color:#CDD5E0;font-weight:500">${t.name}</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:${t.success>=76?AMBER:'#CDD5E0'}">${t.success.toFixed(2)}%</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:${T2}">$${t.budget.toFixed(2)}B</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:${i===0?TEAL:'#CDD5E0'};font-weight:${i===0?700:400}">
+          ${t.eff.toFixed(2)}
+          ${i===0 ? `<span style="margin-left:8px;font-size:9px;background:${TS};color:${TEAL};padding:2px 6px;border-radius:2px">BEST ROI</span>` : ''}
+        </td>
+      </tr>`).join('')}
+    </tbody>`;
+}
+
+function initCollaboration() {
+  mkChart('c-collab-success', {
+    type:'bar',
+    data:{labels:D.collab.map(c=>c.label), datasets:[{data:D.collab.map(c=>c.success), backgroundColor:D.collab.map(c=>c.success>=75?AMBER:AS), borderColor:D.collab.map(c=>c.success>=75?AMBER:'transparent'), borderWidth:1, borderRadius:3}]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{...tip, callbacks:{label:ctx=>` ${ctx.parsed.y.toFixed(2)}% success rate`, afterLabel:ctx=>` ${D.collab[ctx.dataIndex].missions.toLocaleString()} missions`}}},
+      scales:{x:{...axis}, y:{...axis, min:71.5, max:76.5, ticks:{...axis.ticks, callback:v=>v+'%'}}},
+    },
+  });
+
+  mkChart('c-collab-budget', {
+    type:'bar',
+    data:{labels:D.collab.map(c=>c.label), datasets:[{data:D.collab.map(c=>c.budget), backgroundColor:D.collab.map(c=>c.n===1?RS:TS), borderColor:D.collab.map(c=>c.n===1?RED:TEAL), borderWidth:1, borderRadius:3}]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{...tip, callbacks:{label:ctx=>` $${ctx.parsed.y.toFixed(2)}B avg budget`}}},
+      scales:{x:{...axis}, y:{...axis, min:24.5, max:27.2, ticks:{...axis.ticks, callback:v=>'$'+v.toFixed(1)+'B'}}},
+    },
+  });
+
+  // Insight grid
+  const grid = document.getElementById('collab-insight-grid');
+  grid.innerHTML = D.collab.map(c => `
+    <div class="insight-card">
+      <div class="insight-label">${c.label}</div>
+      <div class="insight-big" style="color:${c.success>=75?'var(--amber)':'#CDD5E0'}">${c.success}%</div>
+      <div class="insight-sub">success rate</div>
+      <div class="insight-meta">${c.missions.toLocaleString()} missions</div>
+      <div class="insight-meta" style="color:${c.n===1?'var(--red)':'var(--t3)'}">$${c.budget.toFixed(2)}B avg</div>
+    </div>`).join('');
+}
+
+function initCost() {
+  mkChart('c-expensive', {
+    type:'bar',
+    data:{
+      labels: D.expensive.map(m=>m.country),
+      datasets:[
+        {type:'bar',  label:'Budget ($B)', data:D.expensive.map(m=>m.budget), backgroundColor:AS, borderColor:AMBER, borderWidth:1, borderRadius:3, yAxisID:'yB'},
+        {type:'line', label:'Success Rate (%)', data:D.expensive.map(m=>m.success), borderColor:TEAL, backgroundColor:'transparent', borderWidth:2.5, pointRadius:6, pointHoverRadius:8, pointBackgroundColor:D.expensive.map(m=>m.success>=80?TEAL:m.success<65?RED:AMBER), tension:0, yAxisID:'yS'},
+      ],
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:true, labels:{color:T2, font:{family:'JetBrains Mono',size:11}, boxWidth:12, padding:16}},
+        tooltip:{...tip},
+      },
+      scales:{
+        x: {...axis},
+        yB:{...axis, position:'left',  min:49.85, max:50.05, ticks:{...axis.ticks, callback:v=>'$'+v.toFixed(2)+'B'}},
+        yS:{...axis, position:'right', min:0,     max:100,   grid:{display:false}, ticks:{...axis.ticks, callback:v=>v+'%'}},
+      },
+    },
+  });
+
+  const tbl = document.getElementById('cost-table');
+  tbl.innerHTML = `
+    <thead><tr>
+      <th>Rank</th><th>Mission</th><th>Country</th><th>Technology</th><th>Budget</th><th>Success</th><th>Score</th>
+    </tr></thead>
+    <tbody>${D.costEffective.map((m,i) => `
+      <tr>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:${i<3?AMBER:T3};font-weight:${i<3?700:400}">#${m.rank}</td>
+        <td style="font-family:'DM Sans',sans-serif;font-size:11px;color:#CDD5E0;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.name}</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:${T2}">${m.country}</td>
+        <td style="font-family:'DM Sans',sans-serif;font-size:11px;color:${T2}">${m.tech}</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:${T2}">$${m.budget}B</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:${m.success>=90?TEAL:'#CDD5E0'}">${m.success}%</td>
+        <td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:${i<3?AMBER:'#CDD5E0'};font-weight:${i<3?700:400}">
+          ${m.score.toFixed(2)}
+          ${i===0 ? `<span style="margin-left:6px;font-size:9px;background:${AS};color:${AMBER};padding:2px 5px;border-radius:2px">TOP</span>` : ''}
+        </td>
+      </tr>`).join('')}
+    </tbody>`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════
+const INIT_FNS = {overview:initOverview, countries:initCountries, technology:initTechnology, collaboration:initCollaboration, cost:initCost};
+const initialized = new Set();
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => {
+    s.classList.toggle('active', s.id === 's-' + id);
+  });
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.toggle('active', n.dataset.s === id);
+  });
+  if (!initialized.has(id)) {
+    INIT_FNS[id]?.();
+    initialized.add(id);
+  }
+}
+
+document.querySelectorAll('.nav-item').forEach(n => {
+  n.addEventListener('click', () => showSection(n.dataset.s));
+});
+
+// ═══════════════════════════════════════════════════════════
+// TICKER
+// ═══════════════════════════════════════════════════════════
+function buildTicker() {
+  const items = [...D.expensive, ...D.costEffective.slice(0, 5)];
+  const doubled = [...items, ...items];
+  const track = document.getElementById('ticker-track');
+  track.innerHTML = doubled.map(m => {
+    const sc = m.success;
+    const col = sc >= 80 ? '#00C9A7' : sc < 65 ? '#FF4757' : '#CDD5E0';
+    const nm  = m.name.split(' ').slice(0, 4).join(' ') + (m.name.split(' ').length > 4 ? '…' : '');
+    const bg  = (m.budget ?? 0).toFixed(2);
+    return `<span class="t-item"><span style="color:#F5A623">▶</span> <span style="color:#CDD5E0">${nm}</span><span style="color:#5A6478"> · ${m.country} · $${bg}B · </span><span style="color:${col}">${sc}% SUCCESS</span></span>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════════════════════
+buildTicker();
+showSection('overview');
+</script>
+</body>
+</html>
